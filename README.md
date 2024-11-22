@@ -1,20 +1,13 @@
-<<<<<<< HEAD
-# Sudoku-Dart
-=======
-# sudoku
+Sudoku-Dart
 
-A new Flutter project.
+Esse projeto consiste no desenvolvimento do famoso jogo "Sudoku", usando o framework "Flutter" com a linguagem "Dart".
+O tabuleiro é gerado a partir da API "https://pub.dev/packages/sudoku_dart".
 
-## Getting Started
+Para jogar, basta dizer o seu nome e escolher a dificuldade.
 
-This project is a starting point for a Flutter application.
+Regras do Sudoku:
 
-A few resources to get you started if this is your first Flutter project:
+- Não pode ter números repetidos em uma linha
+- Não pode ter números repetidos em uma coluna
+- Não pode ter números repetidos em um subgrupo 3x3
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
->>>>>>> b4a65b6 (feat: adicionando arquivos do  projeto)
