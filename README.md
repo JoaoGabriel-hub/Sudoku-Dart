@@ -1,4 +1,4 @@
-Sudoku-Dart
+# Sudoku-Dart
 
 Esse projeto consiste no desenvolvimento do famoso jogo "Sudoku", usando o framework "Flutter" com a linguagem "Dart".
 O tabuleiro é gerado a partir da API "https://pub.dev/packages/sudoku_dart".
