@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class BuscaPage extends StatefulWidget {
+class Busca extends StatefulWidget {
   @override
-  _BuscaPageState createState() => _BuscaPageState();
+  _BuscaState createState() => _BuscaState();
 }
 
-class _BuscaPageState extends State<BuscaPage> {
+class _BuscaState extends State<Busca> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
