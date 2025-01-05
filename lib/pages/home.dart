@@ -5,6 +5,7 @@ import 'package:sudoku/pages/arguments.dart';
 import 'package:sudoku/pages/game.dart';
 
 
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -123,7 +124,16 @@ class _HomePageState extends State<HomePage> {
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white),
-              child: Text("Novo Jogo"))
+              child: Text("Novo Jogo")),
+
+            ElevatedButton(
+            onPressed: () {
+            Navigator.pushNamed(context, '/busca');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white),
+            child: Text("Busca"))
           ],
 
           )
