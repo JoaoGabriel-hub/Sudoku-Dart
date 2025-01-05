@@ -1,5 +1,5 @@
 class Arguments {
   String name;
-  String level;
+  int level;
   Arguments(this.name, this.level);
 }

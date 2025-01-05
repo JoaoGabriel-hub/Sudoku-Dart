@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  String? _levelRadio;
+  int? _levelRadio;
 
   TextEditingController textController = TextEditingController();
 
@@ -80,38 +80,38 @@ class _HomePageState extends State<HomePage> {
 
 
             RadioListTile(
-              value: "Easy",
+              value: 0,
               groupValue: _levelRadio,
-              onChanged: (String? val){
+              onChanged: (int? val){
                 setState(() {
-                  _levelRadio = val;
+                  _levelRadio = val!;
                 });
               },
               title: Text("Easy")),
             RadioListTile(
-              value: "Medium",
+              value: 1,
               groupValue: _levelRadio,
-              onChanged: (String? val){
+              onChanged: (int? val){
                 setState(() {
-                  _levelRadio = val;
+                  _levelRadio = val!;
                 });
               },
               title: Text("Medium")),
               RadioListTile(
-              value: "Hard",
+              value: 2,
               groupValue: _levelRadio,
-              onChanged: (String? val){
+              onChanged: (int? val){
                 setState(() {
-                  _levelRadio = val;
+                  _levelRadio = val!;
                 });
               },
               title: Text("Hard")),
               RadioListTile(
-              value: "Expert",
+              value: 3,
               groupValue: _levelRadio,
-              onChanged: (String? val){
+              onChanged: (int? val){
                 setState(() {
-                  _levelRadio = val;
+                  _levelRadio = val!;
                 });
               },
               title: Text("Expert")),

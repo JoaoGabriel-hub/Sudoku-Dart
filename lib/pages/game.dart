@@ -24,13 +24,13 @@ class _GameState extends State<Game> {
       var args = ModalRoute.of(context)!.settings.arguments as Arguments;
 
       // Inicializa o Sudoku apenas uma vez conforme a dificuldade
-      if (args.level == "Easy") {
+      if (args.level == 0) {
         sudoku = Sudoku.generate(Level.easy);
-      } else if (args.level == "Medium") {
+      } else if (args.level == 1) {
         sudoku = Sudoku.generate(Level.medium);
-      } else if (args.level == "Hard") {
+      } else if (args.level == 2) {
         sudoku = Sudoku.generate(Level.hard);
-      } else if (args.level == "Expert") {
+      } else if (args.level == 3) {
         sudoku = Sudoku.generate(Level.expert);
       } else {
         sudoku = Sudoku.generate(Level.easy); // Padrão se não definido
