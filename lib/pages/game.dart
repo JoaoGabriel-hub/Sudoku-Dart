@@ -15,6 +15,11 @@ CREATE TABLE rodadas(
 );
 """;
 
+int? result;
+String? name;
+int? level;
+
+
 class Game extends StatefulWidget {
   const Game({super.key});
   static String routeName = "/game";
@@ -221,6 +226,11 @@ class _GameState extends State<Game> {
                         print(playerInput); 
                         print(sudoku.solution); */  //Prints de teste
                         int result = checkWinCondition();
+                        setState(() {
+                          result = result; // Atualiza o resultado global
+                          name = (ModalRoute.of(context)!.settings.arguments as Arguments).name; // Atualiza o nome global
+                          level = (ModalRoute.of(context)!.settings.arguments as Arguments).level; // Atualiza o nível global
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
@@ -229,7 +239,7 @@ class _GameState extends State<Game> {
                     ),
                   ],
                 ),
-              
+                
               ),
             ),
     );
