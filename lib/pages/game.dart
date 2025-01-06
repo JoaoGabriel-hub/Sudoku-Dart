@@ -4,6 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:sudoku/pages/arguments.dart';
 import 'package:sudoku_dart/sudoku_dart.dart';
 
+
+// Definição da tabela "rodadas" como constante global
+const String createTableRodadas = """
+CREATE TABLE rodadas(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name VARCHAR NOT NULL,
+  result INTEGER,
+  level INTEGER
+);
+""";
+
 class Game extends StatefulWidget {
   const Game({super.key});
   static String routeName = "/game";
@@ -49,7 +60,7 @@ class _GameState extends State<Game> {
     });
   }
 
-  void checkWinCondition() {
+  int checkWinCondition() {
     bool hasWon = true;
 
     // Compara cada posição do `playerInput` com a solução correta
@@ -103,6 +114,7 @@ class _GameState extends State<Game> {
         ),
       );
     }
+    return hasWon ? 1 : 0;
   }
 
   @override
@@ -208,7 +220,7 @@ class _GameState extends State<Game> {
                         /*print("Botão 'Submeter' foi clicado."); 
                         print(playerInput); 
                         print(sudoku.solution); */  //Prints de teste
-                        checkWinCondition();
+                        int result = checkWinCondition();
                       },
                       style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
@@ -217,6 +229,7 @@ class _GameState extends State<Game> {
                     ),
                   ],
                 ),
+              
               ),
             ),
     );
