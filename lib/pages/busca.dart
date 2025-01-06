@@ -6,22 +6,23 @@ import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'dart:io' as io;
 import 'package:path/path.dart' as p;
-import 'package:sudoku/pages/game.dart';
+import 'package:sudoku/pages/game.dart'; // Importa o arquivo com createTableRodadas
 
 class Busca extends StatefulWidget {
-  
+
   @override
-  _BuscaState createState() => _BuscaState();
+  _Busca createState() => _Busca();
 }
 
-class _BuscaState extends State<Busca> {
+class _Busca extends State<Busca> {
 
-  _recoverDatabase() async {
+  // Método para inicializar o banco de dados
+  Future<Database> _recoverDatabase() async {
     sqfliteFfiInit();
     var databaseFactory = databaseFactoryFfi;
     final io.Directory appDocumentsDir = await getApplicationDocumentsDirectory();
     final path = p.join(appDocumentsDir.path, "databases", "banco.db");
-    
+
     print("Database path: $path");
     //await databaseFactory.deleteDatabase(path);
     Database db = await databaseFactory.openDatabase(
@@ -29,26 +30,53 @@ class _BuscaState extends State<Busca> {
       options: OpenDatabaseOptions(
         version: 2,
         onCreate: (db, version) async {
-          await db.execute(createTableRodadas);    
-          }
-        )
-      );
+          await db.execute(createTableRodadas); // Utiliza a tabela importada de game.dart
+        },
+      ),
+    );
     return db;
   }
 
+  // Função para salvar o resultado do jogo
+  Future<void> saveGameResult(String name, int level, int result) async {
+    try {
+      Database db = await _recoverDatabase(); // Recupera o banco de dados
+      await db.insert(
+        'rodadas',
+        {
+          'name': name,
+          'level': level,
+          'result': result,
+        },
+      );
+      print("Resultado salvo no banco de dados: {name: $name, level: $level, result: $result}");
+    } catch (e) {
+      print("Erro ao salvar o resultado no banco de dados: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
 
       appBar: AppBar(title: Text('Busca')),
-
+      
       body: Center(
-
-        child: Text('Conteúdo da página de busca'),
-
-
-
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () async {
+                // Exemplo de como usar a função saveGameResult
+                await saveGameResult("Jogador1", 2, 1); // Salva um resultado fictício
+                print("Dados de exemplo salvos.");
+              },
+              child: Text("Salvar Resultado"),
+            ),
+            Text('Conteúdo da página de busca'),
+          ],
+        ),
       ),
     );
   }
