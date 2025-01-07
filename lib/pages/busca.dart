@@ -9,36 +9,36 @@ import 'package:path/path.dart' as p;
 import 'package:sudoku/pages/game.dart'; // Importa o arquivo com createTableRodadas
 
 class Busca extends StatefulWidget {
-
   @override
   _Busca createState() => _Busca();
 }
 
 class _Busca extends State<Busca> {
 
-  
-
   @override
-
-
-  void initState() {
-    super.initState();
-
-    // Printando as variáveis result, name e level
-    print('Result: $result');
-    print('Name: $name');
-    print('Level: $level');
-  }
-
-  
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(title: Text('Busca')),
-      
       body: Center(
-        child: Text('Conteúdo da página de busca'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 20), // Espaçamento entre elementos
+            ElevatedButton(
+              onPressed: () {
+                // Printando as variáveis result, name e level
+                print('Result: $result');
+                print('Name: $name');
+                print('Level: $level');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+              child: Text('Mostrar última partida'),
+            ),
+          ],
+        ),
       ),
     );
   }
