@@ -15,6 +15,8 @@ class Busca extends StatefulWidget {
 
 class _Busca extends State<Busca> {
   late Database database;
+  List<Map<String, dynamic>> rodadas = []; // Lista para armazenar as rodadas do banco
+  int? selectedLevel; // Nível de dificuldade selecionado
 
   @override
   void initState() {
@@ -23,42 +25,40 @@ class _Busca extends State<Busca> {
   }
 
   Future<void> _initializeDatabase() async {
-  try {
-    // Inicializa o banco de dados
-    sqfliteFfiInit();
-    var dbFactory = databaseFactoryFfi;
-    final directory = await getApplicationDocumentsDirectory();
-    final path = p.join(directory.path, 'sudoku.db');
-    database = await dbFactory.openDatabase(path);
-
-    // Cria a tabela "rodadas" se ela não existir
-    await database.execute("""
-    CREATE TABLE IF NOT EXISTS rodadas(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name VARCHAR NOT NULL,
-      result INTEGER,
-      level INTEGER
-    );
-    """);
-    print('Banco de dados inicializado em $path');
-  } catch (e) {
-    print('Erro ao inicializar o banco de dados: $e');
-  }
-}
-
-  Future<void> _printRodadas() async {
     try {
-      // Busca todas as rodadas da tabela
-      final rodadas = await database.query('rodadas');
-      if (rodadas.isEmpty) {
-        print('Nenhuma rodada encontrada.');
-      } else {
-        print('Rodadas salvas:');
-        for (var rodada in rodadas) {
-          print(
-              'Jogador: ${rodada['name']}, Resultado: ${rodada['result']}, Nível: ${rodada['level']}');
-        }
-      }
+      // Inicializa o banco de dados
+      sqfliteFfiInit();
+      var dbFactory = databaseFactoryFfi;
+      final directory = await getApplicationDocumentsDirectory();
+      final path = p.join(directory.path, 'sudoku.db');
+      database = await dbFactory.openDatabase(path);
+
+      // Cria a tabela "rodadas" se ela não existir
+      await database.execute("""
+      CREATE TABLE IF NOT EXISTS rodadas(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name VARCHAR NOT NULL,
+        result INTEGER,
+        level INTEGER,
+        date TEXT NOT NULL
+      );
+      """);
+      print('Banco de dados inicializado em $path');
+      await _fetchRodadas(); // Busca as rodadas ao iniciar o app
+    } catch (e) {
+      print('Erro ao inicializar o banco de dados: $e');
+    }
+  }
+
+  Future<void> _fetchRodadas({int? level}) async {
+    try {
+      // Consulta as rodadas filtrando pelo nível se necessário
+      final data = level != null
+          ? await database.query('rodadas', where: 'level = ?', whereArgs: [level])
+          : await database.query('rodadas');
+      setState(() {
+        rodadas = data; // Atualiza a lista de rodadas com os dados do banco
+      });
     } catch (e) {
       print('Erro ao buscar rodadas: $e');
     }
@@ -67,17 +67,53 @@ class _Busca extends State<Busca> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Busca')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: _printRodadas,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Busca'),
+        actions: [
+          PopupMenuButton<int>(
+            onSelected: (int level) async {
+              setState(() {
+                selectedLevel = level; // Atualiza o nível selecionado
+              });
+              await _fetchRodadas(level: level); // Filtra as rodadas pelo nível selecionado
+            },
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(value: null, child: Text("Todos os níveis")),
+              PopupMenuItem(value: 0, child: Text("Fácil")),
+              PopupMenuItem(value: 1, child: Text("Médio")),
+              PopupMenuItem(value: 2, child: Text("Difícil")),
+              PopupMenuItem(value: 3, child: Text("Expert")),
+            ],
           ),
-          child: Text('Mostrar rodadas no terminal'),
-        ),
+        ],
       ),
+      body: rodadas.isEmpty
+          ? Center(
+              child: Text(selectedLevel == null
+                  ? 'Nenhuma rodada encontrada.'
+                  : 'Nenhuma rodada encontrada para o nível selecionado.'),
+            )
+          : ListView.builder(
+              itemCount: rodadas.length,
+              itemBuilder: (context, index) {
+                final rodada = rodadas[index];
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: ListTile(
+                    title: Text('Jogador: ${rodada['name']}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Resultado: ${rodada['result'] == 1 ? "Vitória" : "Derrota"}'),
+                        Text('Nível: ${rodada['level']}'),
+                        Text('Data: ${rodada['date']}'),
+                      ],
+                    ),
+                    trailing: Text('ID: ${rodada['id']}'),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
