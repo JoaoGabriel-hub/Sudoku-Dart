@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:sudoku/pages/arguments.dart';
 import 'package:sudoku_dart/sudoku_dart.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart' as p;
 
