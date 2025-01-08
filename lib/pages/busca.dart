@@ -14,30 +14,68 @@ class Busca extends StatefulWidget {
 }
 
 class _Busca extends State<Busca> {
+  late Database database;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDatabase();
+  }
+
+  Future<void> _initializeDatabase() async {
+  try {
+    // Inicializa o banco de dados
+    sqfliteFfiInit();
+    var dbFactory = databaseFactoryFfi;
+    final directory = await getApplicationDocumentsDirectory();
+    final path = p.join(directory.path, 'sudoku.db');
+    database = await dbFactory.openDatabase(path);
+
+    // Cria a tabela "rodadas" se ela não existir
+    await database.execute("""
+    CREATE TABLE IF NOT EXISTS rodadas(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name VARCHAR NOT NULL,
+      result INTEGER,
+      level INTEGER
+    );
+    """);
+    print('Banco de dados inicializado em $path');
+  } catch (e) {
+    print('Erro ao inicializar o banco de dados: $e');
+  }
+}
+
+  Future<void> _printRodadas() async {
+    try {
+      // Busca todas as rodadas da tabela
+      final rodadas = await database.query('rodadas');
+      if (rodadas.isEmpty) {
+        print('Nenhuma rodada encontrada.');
+      } else {
+        print('Rodadas salvas:');
+        for (var rodada in rodadas) {
+          print(
+              'Jogador: ${rodada['name']}, Resultado: ${rodada['result']}, Nível: ${rodada['level']}');
+        }
+      }
+    } catch (e) {
+      print('Erro ao buscar rodadas: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Busca')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: 20), // Espaçamento entre elementos
-            ElevatedButton(
-              onPressed: () {
-                // Printando as variáveis result, name e level
-                print('Result: $result');
-                print('Name: $name');
-                print('Level: $level');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-              ),
-              child: Text('Mostrar última partida'),
-            ),
-          ],
+        child: ElevatedButton(
+          onPressed: _printRodadas,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+          ),
+          child: Text('Mostrar rodadas no terminal'),
         ),
       ),
     );
