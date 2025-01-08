@@ -3,6 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:sudoku/pages/arguments.dart';
 import 'package:sudoku_dart/sudoku_dart.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite_common/sqlite_api.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:path/path.dart' as p;
 
 
 // Definição da tabela "rodadas" como constante global
@@ -65,27 +69,52 @@ class _GameState extends State<Game> {
     });
   }
 
+  // Função para salvar a rodada no banco de dados
+  Future<void> _saveRodada(String name, int result, int level) async {
+    try {
+      sqfliteFfiInit();
+      var dbFactory = databaseFactoryFfi;
+      final directory = await getApplicationDocumentsDirectory();
+      final path = p.join(directory.path, 'sudoku.db');
+      final database = await dbFactory.openDatabase(path);
+
+      await database.insert(
+        'rodadas',
+        {
+          'name': name,
+          'result': result,
+          'level': level,
+        },
+      );
+      print('Rodada salva com sucesso: Jogador=$name, Resultado=$result, Nível=$level');
+    } catch (e) {
+      print('Erro ao salvar rodada: $e');
+    }
+  }
+
   int checkWinCondition() {
     bool hasWon = true;
 
     // Compara cada posição do `playerInput` com a solução correta
     for (int i = 0; i < 81; i++) {
       if (playerInput[i] == -1) {
-        // Se ainda houver um -1, o tabuleiro está incompleto
         hasWon = false;
-        print("Erro: Tabuleiro incompleto. Índice $i não preenchido.");
         break;
       } else if (playerInput[i] != sudoku.solution[i]) {
-        // Se houver um valor incorreto, o tabuleiro está incorreto
         hasWon = false;
-        print("Erro: Valor incorreto em índice $i. Esperado: ${sudoku.solution[i]}, Encontrado: ${playerInput[i]}");
         break;
       }
     }
 
-    // Exibe um alerta baseado no resultado
+    // Nome e nível do jogador vindo dos argumentos da rota
+    String playerName = (ModalRoute.of(context)!.settings.arguments as Arguments).name;
+    int gameLevel = (ModalRoute.of(context)!.settings.arguments as Arguments).level;
+
+    // Salva a rodada no banco de dados com o resultado
+    _saveRodada(playerName, hasWon ? 1 : 0, gameLevel);
+
+    // Exibe o alerta com base no resultado
     if (hasWon) {
-      print("Parabéns! Você venceu o jogo de Sudoku.");
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -102,7 +131,6 @@ class _GameState extends State<Game> {
         ),
       );
     } else {
-      print("O tabuleiro não está completo ou possui erros.");
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -119,6 +147,7 @@ class _GameState extends State<Game> {
         ),
       );
     }
+
     return hasWon ? 1 : 0;
   }
 
